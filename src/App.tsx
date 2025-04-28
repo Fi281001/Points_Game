@@ -25,7 +25,7 @@ function App() {
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const numericValue = parseInt(inputValue.replace(/[^0-9]/g, ""), 10); // Chuyển đổi sang số
+    const numericValue = parseInt(inputValue.replace(/[^0-9]/g, ""), 10);
     setPendingValue(numericValue || 0);
   };
 
@@ -79,6 +79,7 @@ function App() {
     if (!clickedPoint || clickedPoint.clicked) return;
 
     if (id === click) {
+      // Nếu click đúng, thực hiện update trạng thái clicked và đợi fade-out
       setPoints((prevPoints) =>
         prevPoints.map((point) =>
           point.id === id ? { ...point, clicked: true } : point
@@ -91,25 +92,27 @@ function App() {
         setPoints((prevPoints) => {
           const newPoints = prevPoints.filter((point) => point.id !== id);
           if (newPoints.length === 0) {
-            // Chỉ khi tất cả điểm đã biến mất thì mới ALL CLEARED
             setStatus("ALL CLEARED");
             setIsPlaying(false);
           }
           return newPoints;
         });
-      }, 3000);
+      }, 3000); // Đợi 3 giây để fade-out trước khi xóa hoàn toàn
 
       timeoutIds.current.push(timeoutId);
     } else {
-      // Nếu click sai
+      // Nếu click sai, chuyển trạng thái game OVER và không có fade-out
       setPoints((prevPoints) =>
         prevPoints.map((point) =>
-          point.id === id ? { ...point, clicked: true } : point
+          point.id === id ? { ...point, clicked: false } : point
         )
       );
       setStatus("GAME OVER");
       setIsPlaying(false);
-      setClick(1);
+      setClick(1); // Đặt lại giá trị click
+      // Dừng timer
+      timeoutIds.current.forEach(clearTimeout);
+      timeoutIds.current = [];
     }
   };
 
@@ -147,11 +150,11 @@ function App() {
                 left: `${point.x}%`,
                 zIndex: 10000 - point.id,
                 backgroundColor: point.clicked ? "#ff0000" : "",
-                opacity: point.clicked ? 0.3 : 1,
-                transition: "all 0.5s ease",
+                opacity: point.clicked ? 0 : 1, // Ẩn điểm khi clicked đúng
+                transition: point.clicked ? "opacity 3s ease-out" : "none", // Fade-out nếu click đúng
                 padding: "10px",
                 borderRadius: "50%",
-                border: "none",
+                border: "1px solid #000",
                 cursor: point.clicked ? "default" : "pointer",
               }}
               onClick={() => handleClick(point.id)}
