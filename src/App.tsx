@@ -149,9 +149,11 @@ function App() {
                 top: `${point.y}%`,
                 left: `${point.x}%`,
                 zIndex: 10000 - point.id,
-                backgroundColor: point.clicked ? "#ff0000" : "",
+                backgroundColor: point.clicked ? "#ff3333" : "",
                 opacity: point.clicked ? 0 : 1, // Ẩn điểm khi clicked đúng
-                transition: point.clicked ? "opacity 3s ease-out" : "none", // Fade-out nếu click đúng
+                transition: point.clicked
+                  ? "background-color 1s, opacity 3s ease-out"
+                  : "#cf0909", // Fade-out và chuyển màu
                 padding: "10px",
                 borderRadius: "50%",
                 border: "1px solid #000",
