@@ -10,7 +10,6 @@ interface Point {
 }
 
 function App() {
-  const [value, setValue] = useState<number | string>(0);
   const [time, setTime] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [points, setPoints] = useState<Point[]>([]);
@@ -26,8 +25,8 @@ function App() {
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const numericValue = inputValue.replace(/[^0-9]/g, "");
-    setPendingValue(numericValue);
+    const numericValue = parseInt(inputValue.replace(/[^0-9]/g, ""), 10); // Chuyển đổi sang số
+    setPendingValue(numericValue || 0);
   };
 
   useEffect(() => {
@@ -47,7 +46,6 @@ function App() {
     timeoutIds.current.forEach(clearTimeout);
     timeoutIds.current = [];
 
-    setValue(pendingValue);
     setClick(1);
     setStatus("LET'S PLAY");
     setTime(0);
@@ -148,13 +146,12 @@ function App() {
                 top: `${point.y}%`,
                 left: `${point.x}%`,
                 zIndex: 10000 - point.id,
-                backgroundColor: point.clicked ? "#ff0000" : "#00000",
+                backgroundColor: point.clicked ? "#ff0000" : "",
                 opacity: point.clicked ? 0.3 : 1,
                 transition: "all 0.5s ease",
                 padding: "10px",
                 borderRadius: "50%",
                 border: "none",
-
                 cursor: point.clicked ? "default" : "pointer",
               }}
               onClick={() => handleClick(point.id)}
